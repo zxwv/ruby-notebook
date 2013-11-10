@@ -1,1 +1,2 @@
 This example uses both <%= "embedded Ruby" %> and **Markdown**.
+
