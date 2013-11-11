@@ -1,5 +1,6 @@
 require 'erubis'
 require 'redcarpet'
+require 'nokogiri'
 
 require_relative '../note'
 require_relative 'note_dsl_helper'
@@ -7,6 +8,23 @@ require_relative 'metadata_postprocessor'
 
 module RubyNotebook
   class Parser
+    class << self
+      def parse_directory(in_path)
+        dir_path = File.expand_path(in_path)
+        dir = Dir.new(dir_path)
+        file_paths = dir.entries.map do |elem|
+          File.join(dir_path, elem)
+        end.reject do |elem|
+          File.directory?(elem) || File.symlink?(elem)
+        end
+        file_paths.map do |elem|
+          parser = Parser.new(elem)
+          parser.run
+          parser.to_note
+        end
+      end
+    end
+
     def initialize(file_name)
       @file_path = File.expand_path(file_name)
       @dsl_helper = NoteDslHelper.new

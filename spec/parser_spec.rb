@@ -1,6 +1,6 @@
 require 'nokogiri'
 
-require_relative '../lib/ruby-notebook/parsing/parser'
+require_relative '../lib/ruby-notebook'
 
 describe RubyNotebook::Parser do
   context 'parsing example 0: plain text' do
