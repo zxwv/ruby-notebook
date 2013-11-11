@@ -74,5 +74,11 @@ describe RubyNotebook::Parser do
         @parse_result[:raw_metadata][key].should == val
       end
     end
+
+    it 'should successfully post-process metadata where such rules are defined' do
+      [:created, :modified].each do |field|
+        @parse_result[:metadata][field].should == DateTime.parse(@parse_result[:raw_metadata][field])
+      end
+    end
   end
 end

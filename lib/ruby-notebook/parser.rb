@@ -2,6 +2,7 @@ require 'erubis'
 require 'redcarpet'
 
 require_relative 'note_dsl_helper'
+require_relative 'metadata_postprocessor'
 
 module RubyNotebook
   class Parser
@@ -14,12 +15,13 @@ module RubyNotebook
       load_file
       erb_step
       markdown_step
+      metadata_postprocessing_step
       { :input => @raw_input,
         :erb => @erb_output,
         :markdown => @markdown_output,
         :output => @markdown_output,
-        :raw_metadata => @dsl_helper.metadata_collector.collected,
-        :metadata => @dsl_helper.metadata_collector.collected }
+        :raw_metadata => @raw_metadata,
+        :metadata => @metadata }
     end
 
     private
@@ -36,6 +38,18 @@ module RubyNotebook
     def markdown_step
       redcarpet = Redcarpet::Markdown.new Redcarpet::Render::HTML
       @markdown_output = redcarpet.render @erb_output
+      @raw_metadata = @dsl_helper.metadata_collector.collected
+    end
+
+    def metadata_postprocessing_step
+      @metadata = { }
+      @raw_metadata.each_pair do |key, val|
+        if MetadataPostprocessor.respond_to? key
+          @metadata[key] = MetadataPostprocessor.send key, val
+        else
+          @metadata[key] = val
+        end
+      end
     end
   end
 end
