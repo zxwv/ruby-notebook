@@ -51,10 +51,14 @@ describe RubyNotebook::Parser do
     before :each do
       @parser = RubyNotebook::Parser.new 'spec_examples/0003_erb_and_markdown.txt'
       @parse_result = @parser.run
+      @nokogiri_output = Nokogiri::HTML(@parse_result[:output])
     end
 
-    it 'should run erb processing followed by markdown processing' do
-
+    it 'should run erb processing followed by markdown processing in correct order' do
+      @nokogiri_output.content.should =~ /this example uses both embedded ruby and markdown/i
+      @nokogiri_output.content.should =~ /in fact, you can embed markdown inside your erb/i
+      @nokogiri_output.xpath('//em').count.should == 2
+      @nokogiri_output.xpath('//strong').count.should == 2
     end
   end
 
@@ -91,6 +95,37 @@ describe RubyNotebook::Parser do
           @note_result.metadata[key].should == RubyNotebook::MetadataPostprocessor.send(key, val)
         else
           @note_result.metadata[key].should == val
+        end
+      end
+    end
+  end
+
+  context 'parsing example 5: fizzbuzz' do
+    before :each do
+      @parser = RubyNotebook::Parser.new 'spec_examples/0005_fizzbuzz.txt'
+      @parse_result = @parser.run
+      @note_result = @parser.to_note
+      @nokogiri_output = Nokogiri::HTML(@note_result.html_contents)
+    end
+
+    it 'should contain the dynamically generated count up' do
+      @nokogiri_output.xpath('//li').count.should == 100
+    end
+
+    it 'should execute both angle-percent and angle-percent-equal blocks correctly, thus computing FizzBuzz' do
+      fizzbuzz_nodes = @nokogiri_output.xpath('//li')
+      (1..100).each do |num|
+        node = fizzbuzz_nodes[num - 1]
+        div3 = num % 3 == 0
+        div5 = num % 5 == 0
+        if div3 && div5
+          node.content.should == 'FizzBuzz'
+        elsif div3
+          node.content.should == 'Fizz'
+        elsif div5
+          node.content.should == 'Buzz'
+        else
+          node.content.should == num.to_s
         end
       end
     end
