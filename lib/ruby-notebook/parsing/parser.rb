@@ -1,6 +1,7 @@
 require 'erubis'
 require 'redcarpet'
 
+require_relative '../note'
 require_relative 'note_dsl_helper'
 require_relative 'metadata_postprocessor'
 
@@ -12,18 +13,30 @@ module RubyNotebook
     end
 
     def run
+      return @parser_result if @parser_result
       load_file
       erb_step
       markdown_step
       metadata_postprocessing_step
-      { :file_name => File.basename(@file_path),
-        :file_path => @file_path,
-        :input => @raw_input,
-        :erb => @erb_output,
-        :markdown => @markdown_output,
-        :output => @markdown_output,
-        :raw_metadata => @raw_metadata,
-        :metadata => @metadata }
+      @parser_result = { :file_name => File.basename(@file_path),
+                         :file_path => @file_path,
+                         :input => @raw_input,
+                         :erb => @erb_output,
+                         :markdown => @markdown_output,
+                         :output => @markdown_output,
+                         :raw_metadata => @raw_metadata,
+                         :metadata => @metadata }
+    end
+
+    def to_note
+      run
+      return @note_result if @note_result
+      @note_result = Note.new
+      @note_result.name = File.basename(@parser_result[:file_path], '.*')
+      @note_result.html_contents = @parser_result[:output]
+      @note_result.plain_contents = Nokogiri::HTML(@parser_result[:output]).content
+      @note_result.metadata = @parser_result[:metadata]
+      @note_result
     end
 
     private

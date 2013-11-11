@@ -14,7 +14,7 @@ describe RubyNotebook::Parser do
     end
 
     it 'should produce the correct fields in the output' do
-      @parse_result.should respond_to(:has_key?)
+      @parse_result.should be_a(Hash)
       [:input, :erb, :markdown, :output, :metadata].each do |field_name|
         @parse_result.has_key?(field_name).should be_true
       end
@@ -62,15 +62,16 @@ describe RubyNotebook::Parser do
     before :each do
       @parser = RubyNotebook::Parser.new 'spec_examples/0004_metadata.txt'
       @parse_result = @parser.run
+      @note_result = @parser.to_note
+      @metadata_hash = { :title => 'Example with metadata',
+                         :created => '2013-11-10T09:39:38Z',
+                         :modified => '2013-11-10T09:39:38Z',
+                         :path => ['examples', 'widgets'],
+                         :tags => ['widgets', 'sprockets', 'doodads'] }
     end
 
     it 'should successfully extract metadata from metadata block in erb' do
-      metadata_hash = { :title => 'Example with metadata',
-                        :created => '2013-11-10T09:39:38Z',
-                        :modified => '2013-11-10T09:39:38Z',
-                        :path => ['examples', 'widgets'],
-                        :tags => ['widgets', 'sprockets', 'doodads'] }
-      metadata_hash.each_pair do |key, val|
+      @metadata_hash.each_pair do |key, val|
         @parse_result[:raw_metadata][key].should == val
       end
     end
@@ -78,6 +79,19 @@ describe RubyNotebook::Parser do
     it 'should successfully post-process metadata where such rules are defined' do
       [:created, :modified].each do |field|
         @parse_result[:metadata][field].should == DateTime.parse(@parse_result[:raw_metadata][field])
+      end
+    end
+
+    it 'should successfully convert output into a Note' do
+      @note_result.should_not be_nil
+      @note_result.should be_a(RubyNotebook::Note)
+      @note_result.name.should == '0004_metadata'
+      @metadata_hash.each_pair do |key, val|
+        if RubyNotebook::MetadataPostprocessor.respond_to? key
+          @note_result.metadata[key].should == RubyNotebook::MetadataPostprocessor.send(key, val)
+        else
+          @note_result.metadata[key].should == val
+        end
       end
     end
   end
