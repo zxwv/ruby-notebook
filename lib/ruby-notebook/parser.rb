@@ -6,8 +6,8 @@ require_relative 'metadata_postprocessor'
 
 module RubyNotebook
   class Parser
-    def initialize(filename)
-      @filename = filename
+    def initialize(file_name)
+      @file_path = File.expand_path(file_name)
       @dsl_helper = NoteDslHelper.new
     end
 
@@ -16,7 +16,8 @@ module RubyNotebook
       erb_step
       markdown_step
       metadata_postprocessing_step
-      { :filename => File.basename(@filename),
+      { :file_name => File.basename(@file_path),
+        :file_path => @file_path,
         :input => @raw_input,
         :erb => @erb_output,
         :markdown => @markdown_output,
@@ -28,7 +29,7 @@ module RubyNotebook
     private
 
     def load_file
-      @raw_input = IO.read @filename
+      @raw_input = IO.read @file_path
     end
 
     def erb_step
