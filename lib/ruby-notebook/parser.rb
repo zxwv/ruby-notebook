@@ -16,7 +16,8 @@ module RubyNotebook
       erb_step
       markdown_step
       metadata_postprocessing_step
-      { :input => @raw_input,
+      { :filename => File.basename(@filename),
+        :input => @raw_input,
         :erb => @erb_output,
         :markdown => @markdown_output,
         :output => @markdown_output,
@@ -32,7 +33,7 @@ module RubyNotebook
 
     def erb_step
       erubis = Erubis::Eruby.new @raw_input
-      @erb_output = erubis.result(@dsl_helper.binding_for_erb)
+      @erb_output = erubis.result @dsl_helper.binding_for_erb
     end
 
     def markdown_step
