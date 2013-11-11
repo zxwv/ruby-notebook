@@ -10,7 +10,8 @@ end
 fizzbuzz = (1..100).map do |i|
   fizz = (i % 3 == 0) ? 'Fizz' : nil
   buzz = (i % 5 == 0) ? 'Buzz' : nil
-  if fizz || buzz then "#{fizz}#{buzz}" else i.to_s end
+  num = (fizz || buzz) ? nil : i
+  "#{fizz}#{buzz}#{num}"
 end
 %>
 

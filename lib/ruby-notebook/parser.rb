@@ -1,13 +1,13 @@
 require 'erubis'
 require 'redcarpet'
 
-require_relative 'params_collector'
+require_relative 'note_dsl_helper'
 
 module RubyNotebook
   class Parser
     def initialize(filename)
       @filename = filename
-      @params_collector = ParamsCollector.new
+      @dsl_helper = NoteDslHelper.new
     end
 
     def run
@@ -18,15 +18,11 @@ module RubyNotebook
         :erb => @erb_output,
         :markdown => @markdown_output,
         :output => @markdown_output,
-        :raw_metadata => @metadata_output,
-        :metadata => @metadata_output }
+        :raw_metadata => @dsl_helper.metadata_collector.collected,
+        :metadata => @dsl_helper.metadata_collector.collected }
     end
 
     private
-
-    def metadata(&blk)
-      @params_collector.instance_eval &blk
-    end
 
     def load_file
       @raw_input = IO.read @filename
@@ -34,8 +30,7 @@ module RubyNotebook
 
     def erb_step
       erubis = Erubis::Eruby.new @raw_input
-      @erb_output = erubis.result binding
-      @metadata_output = @params_collector.collected
+      @erb_output = erubis.result(@dsl_helper.binding_for_erb)
     end
 
     def markdown_step
