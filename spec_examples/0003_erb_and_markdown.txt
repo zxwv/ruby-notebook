@@ -1,1 +1,3 @@
 This example uses both <%= "embedded Ruby" %> and **Markdown**.
+
+In fact, you can <%= "embed **Markdown** inside your *erb*" %>.

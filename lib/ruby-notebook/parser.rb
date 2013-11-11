@@ -17,6 +17,8 @@ module RubyNotebook
       { :input => @raw_input,
         :erb => @erb_output,
         :markdown => @markdown_output,
+        :output => @markdown_output,
+        :raw_metadata => @metadata_output,
         :metadata => @metadata_output }
     end
 
