@@ -1,0 +1,28 @@
+<%
+metadata do
+  title 'A rather bad joke'
+  created '2013-11-11T01:03:41Z'
+  modified '2013-11-11T01:03:41Z'
+  path ['examples', 'fizzbuzz']
+  tags ['fizzbuzz', 'interview questions', 'humor', 'easter eggs']
+end
+
+fizzbuzz = (1..100).map do |i|
+  fizz = (i % 3 == 0) ? 'Fizz' : nil
+  buzz = (i % 5 == 0) ? 'Buzz' : nil
+  if fizz || buzz then "#{fizz}#{buzz}" else i.to_s end
+end
+%>
+
+A rather bad joke
+=================
+
+A computer scientist walks into an interview. He says:
+
+<% fizzbuzz.each do |x| %>
+  * <%= x %>
+<% end %>
+
+Thank you! I'll be here all day.
+
+No... really... I will.

@@ -1,3 +1,5 @@
+require 'nokogiri'
+
 require_relative '../lib/ruby-notebook'
 
 describe RubyNotebook::Parser do
@@ -26,7 +28,7 @@ describe RubyNotebook::Parser do
     end
 
     it 'should actually run erb processing' do
-      @parse_result[:output].should =~ /This example uses embedded Ruby./
+      @parse_result[:output].should =~ /this example uses embedded ruby/i
     end
   end
 
@@ -34,10 +36,14 @@ describe RubyNotebook::Parser do
     before :each do
       @parser = RubyNotebook::Parser.new 'spec_examples/0002_markdown.txt'
       @parse_result = @parser.run
+      @nokogiri_output = Nokogiri::HTML(@parse_result[:output])
     end
 
     it 'should actually run markdown processing' do
-
+      @nokogiri_output.content.should =~ /this example uses markdown/i
+      strong_text = @nokogiri_output.xpath('/html/body/p/strong')
+      strong_text.count.should == 1
+      strong_text[0].content.should =~ /markdown/i
     end
   end
 

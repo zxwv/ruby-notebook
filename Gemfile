@@ -7,8 +7,10 @@ gem 'redcarpet'
 
 group :development do
   gem 'pry'
+  gem 'byebug'
 end
 
 group :test do
   gem 'rspec'
+  gem 'nokogiri'
 end

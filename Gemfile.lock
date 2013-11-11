@@ -1,10 +1,18 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    byebug (2.3.1)
+      columnize (~> 0.3.6)
+      debugger-linecache (~> 1.2.0)
     coderay (1.1.0)
+    columnize (0.3.6)
+    debugger-linecache (1.2.0)
     diff-lcs (1.2.5)
     erubis (2.7.0)
     method_source (0.8.2)
+    mini_portile (0.5.2)
+    nokogiri (1.6.0)
+      mini_portile (~> 0.5.0)
     pry (0.9.12.3)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -24,7 +32,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  byebug
   erubis
+  nokogiri
   pry
   redcarpet
   rspec
