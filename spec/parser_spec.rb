@@ -62,6 +62,7 @@ describe RubyNotebook::Parser do
       metadata_hash = { :title => 'Example with metadata',
                         :created => '2013-11-10T09:39:38Z',
                         :modified => '2013-11-10T09:39:38Z',
+                        :path => ['examples', 'widgets'],
                         :tags => ['widgets', 'sprockets', 'doodads'] }
       metadata_hash.each_pair do |key, val|
         @parse_result[:raw_metadata][key].should == val

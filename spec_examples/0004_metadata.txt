@@ -3,6 +3,7 @@ metadata do
   title 'Example with metadata'
   created '2013-11-10T09:39:38Z'
   modified '2013-11-10T09:39:38Z'
+  path ['examples', 'widgets']
   tags ['widgets', 'sprockets', 'doodads']
 end
 %>
